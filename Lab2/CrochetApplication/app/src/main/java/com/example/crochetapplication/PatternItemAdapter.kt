@@ -5,7 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.crochetapplication.databinding.PatternItemCellBinding
 
-class PatternItemAdapter(
+class
+PatternItemAdapter(
   private val patternItems: List<PatternItem>,
   private val clickListener: PatternItemClickListener
 ) : RecyclerView.Adapter<PatternItemViewHolder>(){

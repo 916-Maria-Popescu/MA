@@ -23,10 +23,10 @@ class MainActivity : AppCompatActivity(), PatternItemClickListener {
 
     private fun setRecyclerView() {
         val mainActivity = this
-        patternViewModel.patternItems.observe(this) {
+        patternViewModel.patternItems.observe(this) { list->
             binding.patternsCollectionRecyclerView.apply {
                 layoutManager = LinearLayoutManager(applicationContext)
-                adapter = PatternItemAdapter(it!!, mainActivity)
+                adapter = PatternItemAdapter(list!!, mainActivity)
             }
         }
     }

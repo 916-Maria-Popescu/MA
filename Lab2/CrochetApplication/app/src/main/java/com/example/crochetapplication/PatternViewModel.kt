@@ -12,8 +12,8 @@ class PatternViewModel: ViewModel() {
     }
 
     fun addPatternItem(newPattern: PatternItem) {
-        val list = patternItems.value
-        list!!.add(newPattern)
+        val list = arrayListOf<PatternItem>()
+        list.add(newPattern)
         patternItems.postValue(list)
     }
 
