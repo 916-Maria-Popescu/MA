@@ -13,22 +13,6 @@ class FirstPage extends StatefulWidget{
 }
 
 class _FirstPageState extends State<FirstPage> {
-  List<CrochetPattern> patterns = [
-    CrochetPattern(
-        id: 0,
-        name: 'Bunny toy',
-        description: 'easy and fluffy bunny keychain',
-        category: 'toy',
-        level: 'easy'
-    ),
-    CrochetPattern(
-        id: 1,
-        name: 'Colorful scarf',
-        description: 'scarf in 4 color',
-        category: 'scarf',
-        level: 'medium',
-    )
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +33,7 @@ class _FirstPageState extends State<FirstPage> {
                 return const Center(child: Text('Loading...'));
               }
               return snapshot.data!.isEmpty
-                  ? const Center(child: Text('No Gems in List.'))
+                  ? const Center(child: Text('No patterns in List.'))
                   : Center(
                 child: Container(
                   decoration: const BoxDecoration(
@@ -63,7 +47,7 @@ class _FirstPageState extends State<FirstPage> {
                       )
                   ),
                   child: ListView.builder(
-                    itemCount: patterns.length,
+                    itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       return Padding(
                           padding:  EdgeInsets.only(left: 3, right: 3, top: 10),
@@ -74,24 +58,26 @@ class _FirstPageState extends State<FirstPage> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => UpdatePattern(patterns[index])))
+                                      builder: (_) => UpdatePattern(snapshot.data![index])))
                                   .then((newContact) {
                                 if (newContact != null) {
                                   setState(() {
-                                    patterns.removeAt(index);
-                                    newContact.id = index;
-                                    patterns.insert(index, newContact);
-                                    messageResponse(context,
-                                        newContact.name + " Has been modified...!");
+                                    DatabaseHelper.instance
+                                        .update(newContact);
+
+                                    messageResponse(
+                                        context,
+                                        newContact.name +
+                                            " Has been modified...!");
                                   });
                                 }
                               });
                             },
                             onLongPress: () {
-                              removePattern(context, patterns[index]);
+                              removePattern(context, snapshot.data![index]);
                             },
-                            title: Text(patterns[index].name),
-                            subtitle: Text(patterns[index].description),
+                            title: Text(snapshot.data![index].name),
+                            subtitle: Text(snapshot.data![index].description),
                             trailing: Text.rich(TextSpan(
                                 children: [
                                 ]
@@ -111,10 +97,9 @@ class _FirstPageState extends State<FirstPage> {
               MaterialPageRoute(builder: (_) => const AddPattern()))
               .then((newPattern) {
             if (newPattern != null) {
-              setState(() {
-                patterns.add(newPattern);
-                messageResponse(context, newPattern.name + " was added...!");
-              });
+              DatabaseHelper.instance.add(newPattern);
+              messageResponse(context, newPattern.name + " was added...!");
+              setState((){});
             }
           });
         },
@@ -135,7 +120,11 @@ class _FirstPageState extends State<FirstPage> {
             TextButton(
               onPressed: () {
                 setState(() {
-                  patterns.remove(pattern);
+                  try {
+                    DatabaseHelper.instance.remove(pattern.id!);
+                  } on Exception catch (_) {
+                    rethrow;
+                  }
                   Navigator.pop(context);
                 });
               },
@@ -198,7 +187,7 @@ messageResponse(BuildContext context, String name) {
   showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text("Update Message...!"),
+        title: const Text("Message...!"),
         content: Text("Pattern $name"),
       ));
 }

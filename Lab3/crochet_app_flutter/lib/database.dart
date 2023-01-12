@@ -35,7 +35,7 @@ class DatabaseHelper {
 
   Future<List<CrochetPattern>> getPatterns() async {
     Database db = await instance.database;
-    var patterns = await db.query('pattern', orderBy: 'name');
+    var patterns = await db.query('crochet_patterns', orderBy: 'name');
     List<CrochetPattern> patternsList = patterns.isNotEmpty
         ? patterns.map((c) => CrochetPattern.fromMap(c)).toList()
         : [];
@@ -44,12 +44,12 @@ class DatabaseHelper {
 
   Future<int> add(CrochetPattern pattern) async {
     Database db = await instance.database;
-    return await db.insert('crochet_pattern', pattern.toMap());
+    return await db.insert('crochet_patterns', pattern.toMap());
   }
 
   Future<int> remove(int id) async {
     Database db = await instance.database;
-    return await db.delete('crochet_pattern', where: 'id = ?', whereArgs: [id]);
+    return await db.delete('crochet_patterns', where: 'id = ?', whereArgs: [id]);
   }
 
   Future<int> update(CrochetPattern pattern) async {
